@@ -20,8 +20,12 @@ class PieceType(Enum):
     QUEEN = "queen"
     KING = "king"
 
-# Símbolos Unicode para peças (apenas Torre por enquanto)
+# Símbolos Unicode para peças
 PIECE_SYMBOLS = {
     (Color.WHITE, PieceType.ROOK): '♖',
     (Color.BLACK, PieceType.ROOK): '♜',
+    (Color.WHITE, PieceType.BISHOP): '♗',  # ADICIONADO
+    (Color.BLACK, PieceType.BISHOP): '♝',  # ADICIONADO
+    (Color.WHITE, PieceType.PAWN): '♙',
+    (Color.BLACK, PieceType.PAWN): '♟',
 }

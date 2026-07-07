@@ -1,4 +1,4 @@
-"""Classe base para peças de xadrez - Implementação inicial apenas com Torre"""
+"""Classe base para peças de xadrez"""
 
 from typing import List, Tuple, Optional
 from .constants import Color, PieceType, PIECE_SYMBOLS
@@ -22,30 +22,51 @@ class Piece:
         """Retorna todos os movimentos possíveis para esta peça"""
         row, col = position
         
-        # POR ENQUANTO: APENAS TORRE
         if self.type == PieceType.ROOK:
             return self._get_rook_moves(board, row, col)
+        elif self.type == PieceType.BISHOP:  # ADICIONADO
+            return self._get_bishop_moves(board, row, col)
         
-        # Outras peças serão implementadas depois
         return []
     
     def _get_rook_moves(self, board, row: int, col: int) -> List[Tuple[int, int]]:
+        """Movimentos da Torre - linhas retas (horizontal e vertical)"""
+        moves = []
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        
+        for dr, dc in directions:
+            r, c = row + dr, col + dc
+            while board.is_valid_position(r, c):
+                if board.is_empty(r, c):
+                    moves.append((r, c))
+                elif board.is_enemy(r, c, self.color):
+                    moves.append((r, c))
+                    break
+                else:  # Aliada
+                    break
+                r += dr
+                c += dc
+        
+        return moves
+    
+    def _get_bishop_moves(self, board, row: int, col: int) -> List[Tuple[int, int]]:
         """
-        MOVIMENTOS DA TORRE:
-        - Move em linhas retas (horizontais e verticais)
+        MOVIMENTOS DO BISPO:
+        - Move em diagonais (4 direções)
         - Pode mover quantas casas quiser
         - Não pode pular outras peças
         - Captura a primeira peça inimiga no caminho
         - Não pode mover para casa ocupada por peça aliada
+        - Nunca muda de cor (permanece nas diagonais)
         """
         moves = []
         
-        # Direções: cima, baixo, esquerda, direita
+        # Direções diagonais: cima-esquerda, cima-direita, baixo-esquerda, baixo-direita
         directions = [
-            (-1, 0),  # Cima (diminui linha)
-            (1, 0),   # Baixo (aumenta linha)
-            (0, -1),  # Esquerda (diminui coluna)
-            (0, 1)    # Direita (aumenta coluna)
+            (-1, -1),  # Cima-esquerda
+            (-1, 1),   # Cima-direita
+            (1, -1),   # Baixo-esquerda
+            (1, 1)     # Baixo-direita
         ]
         
         for dr, dc in directions:

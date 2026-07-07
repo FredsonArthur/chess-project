@@ -1,4 +1,4 @@
-"""Classe do tabuleiro de xadrez - Versão simplificada para testar a Torre"""
+"""Classe do tabuleiro de xadrez"""
 
 from typing import Optional, List, Tuple
 from .constants import Color, PieceType
@@ -9,30 +9,36 @@ class Board:
     
     def __init__(self):
         self.grid = [[None for _ in range(8)] for _ in range(8)]
-        self._setup_test_board()  # Configura um tabuleiro de teste
+        self._setup_test_board()
     
     def _setup_test_board(self):
-        """Configura um tabuleiro de teste com apenas algumas peças"""
+        """Configura um tabuleiro de teste com Torre e Bispo"""
         # Limpa o tabuleiro
         for row in range(8):
             for col in range(8):
                 self.grid[row][col] = None
         
-        # Coloca uma TORRE BRANCA no centro (posição 4,4)
-        self.grid[4][4] = Piece(Color.WHITE, PieceType.ROOK)
+        # ===== BISPO BRANCO no centro (d4) =====
+        self.grid[4][4] = Piece(Color.WHITE, PieceType.BISHOP)
         
-        # Coloca algumas peças para testar movimentos
+        # ===== PEÇAS PARA TESTAR O BISPO =====
+        
         # Peças aliadas (bloqueiam o caminho)
-        self.grid[4][6] = Piece(Color.WHITE, PieceType.PAWN)  # Aliada à direita
-        self.grid[2][4] = Piece(Color.WHITE, PieceType.PAWN)  # Aliada acima
+        self.grid[2][2] = Piece(Color.WHITE, PieceType.PAWN)  # f6 (diagonal cima-esquerda)
+        self.grid[2][6] = Piece(Color.WHITE, PieceType.PAWN)  # b6 (diagonal cima-direita)
+        self.grid[6][2] = Piece(Color.WHITE, PieceType.PAWN)  # f2 (diagonal baixo-esquerda)
         
         # Peças inimigas (podem ser capturadas)
-        self.grid[6][4] = Piece(Color.BLACK, PieceType.PAWN)  # Inimiga abaixo
-        self.grid[4][2] = Piece(Color.BLACK, PieceType.PAWN)  # Inimiga à esquerda
+        self.grid[6][6] = Piece(Color.BLACK, PieceType.PAWN)  # b2 (diagonal baixo-direita)
+        self.grid[3][3] = Piece(Color.BLACK, PieceType.PAWN)  # e5 (diagonal cima-esquerda)
+        self.grid[5][5] = Piece(Color.BLACK, PieceType.PAWN)  # c3 (diagonal baixo-direita)
         
-        # Peças para testar bloqueio
-        self.grid[7][4] = Piece(Color.BLACK, PieceType.ROOK)  # Inimiga mais abaixo
-        self.grid[4][0] = Piece(Color.WHITE, PieceType.PAWN)  # Aliada mais à esquerda
+        # Peça inimiga mais longe para testar bloqueio após captura
+        self.grid[1][1] = Piece(Color.BLACK, PieceType.ROOK)  # g7 (atrás do peão em f6)
+        self.grid[7][7] = Piece(Color.BLACK, PieceType.ROOK)  # a1 (atrás do peão em b2)
+        
+        # ===== TORRE para comparação (opcional) =====
+        # self.grid[7][0] = Piece(Color.WHITE, PieceType.ROOK)  # a1
     
     def is_valid_position(self, row: int, col: int) -> bool:
         """Verifica se a posição está dentro do tabuleiro"""
@@ -65,7 +71,7 @@ class Board:
         return None
     
     def move_piece(self, from_pos: Tuple[int, int], to_pos: Tuple[int, int]) -> bool:
-        """Move uma peça de uma posição para outra (SIMPLIFICADO)"""
+        """Move uma peça de uma posição para outra"""
         from_row, from_col = from_pos
         to_row, to_col = to_pos
         
@@ -73,12 +79,10 @@ class Board:
         if piece is None:
             return False
         
-        # Verifica se o movimento é válido
         possible_moves = piece.get_possible_moves(self, from_pos)
         if to_pos not in possible_moves:
             return False
         
-        # Realiza o movimento
         self.grid[to_row][to_col] = piece
         self.grid[from_row][from_col] = None
         piece.has_moved = True
